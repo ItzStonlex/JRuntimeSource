@@ -22,15 +22,14 @@ Usage example:
 SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", null, new Class[]{Serializable.class})
         .setPackage("com.itzstonlex.users")
 
-        .makeFinalizedField(AccessID.PRIVATE, String.class, "name")
-        .makeConstructor(AccessID.PUBLIC, MethodSignature.with(
-                MethodParam.create(String.class, "name")
-        ))
+        .makeField(AccessID.PRIVATE, String.class, "name")
+        .makeConstructor(AccessID.PUBLIC, MethodSignature.with(MethodParam.create(String.class, "name")))
         .beginBody()
-            .makeFieldInit(true, "name", "name")
+            .makeSetThisField("name")
         .endpointBody()
 
         .makeGetter(String.class, "name")
+        .makeSetter(String.class, "name")
 
         .makeOverrideMethod(AccessID.PUBLIC, String.class, "toString", MethodSignature.empty())
         .beginBody()
@@ -50,7 +49,7 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    private final String name;
+    private String name;
 
     public User(String name) {
         this.name = name;
@@ -58,6 +57,10 @@ public class User implements Serializable {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
