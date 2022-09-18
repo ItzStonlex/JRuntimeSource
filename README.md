@@ -19,7 +19,7 @@ For this, `com.itzstonlex.runtimesource.SourceCodeBuilder` will help us
 
 Usage example:
 ```java
-SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", null, new Class[]{Serializable.class})
+SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", new Class[]{Serializable.class})
         .setPackage("com.itzstonlex.users")
 
         .makeField(AccessID.PRIVATE, String.class, "name")

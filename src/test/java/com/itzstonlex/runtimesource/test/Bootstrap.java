@@ -14,7 +14,7 @@ public class Bootstrap {
     public static void main(String[] args)
     throws Exception {
 
-        SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", null, new Class[]{Serializable.class})
+        SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", new Class[]{Serializable.class})
                 .setPackage("com.itzstonlex.users")
 
                 .makeField(AccessID.PRIVATE, String.class, "name")
