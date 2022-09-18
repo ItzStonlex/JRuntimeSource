@@ -88,6 +88,14 @@ Class<?> compiledClass = runtimeCompiler.getCompiledClass("com.itzstonlex.users.
 System.out.println(compiledClass.getConstructor(String.class).newInstance("itzstonlex"));
 // output: itzstonlex
 ```
+
+---
+
+### References:
+
+![RuntimeSourceFactory](references/RuntimeSorceFactory.jpg)
+![SourceCodeBuilder](references/SourceCodeBuilder.jpg)
+
 ---
 
 ## PLEASE, SUPPORT ME
