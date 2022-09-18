@@ -94,7 +94,7 @@ public final class SourceCodeBuilder {
         return this;
     }
 
-    private SourceCodeBuilder makeField(boolean isStatic, boolean isFinal, AccessID accessID, Class<?> type, String name, String equal) {
+    private SourceCodeBuilder makeField(boolean isStatic, boolean isFinal, AccessID accessID, Class<?> type, String name, String codeValue) {
         sourceCode.append("\n\n")
                 .append(getOutbound())
                 .append(accessID.getName())
@@ -104,80 +104,80 @@ public final class SourceCodeBuilder {
                 .append(" ")
                 .append(name);
 
-        if (equal != null) {
-            sourceCode.append(" = ").append(equal);
+        if (codeValue != null) {
+            sourceCode.append(" = ").append(codeValue);
         }
 
         sourceCode.append(";\n");
         return this;
     }
 
-    public SourceCodeBuilder makeConstant(AccessID accessID, Class<?> type, String name, String equal) {
-        return makeField(true, true, accessID, type, name, equal);
+    public SourceCodeBuilder makeConstant(AccessID accessID, Class<?> type, String name, String codeValue) {
+        return makeField(true, true, accessID, type, name, codeValue);
     }
 
-    public SourceCodeBuilder makeConstant(Class<?> type, String name, String equal) {
-        return makeField(true, true, AccessID.PUBLIC, type, name, equal);
+    public SourceCodeBuilder makeConstant(Class<?> type, String name, String codeValue) {
+        return makeField(true, true, AccessID.PUBLIC, type, name, codeValue);
     }
 
-    public SourceCodeBuilder makeStaticField(AccessID accessID, Class<?> type, String name, String equal) {
-        return makeField(true, false, accessID, type, name, equal);
+    public SourceCodeBuilder makeStaticField(AccessID accessID, Class<?> type, String name, String codeValue) {
+        return makeField(true, false, accessID, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeStaticField(AccessID accessID, Class<?> type, String name) {
         return makeField(true, false, accessID, type, name, null);
     }
 
-    public SourceCodeBuilder makeStaticField(Class<?> type, String name, String equal) {
-        return makeField(true, false, AccessID.PUBLIC, type, name, equal);
+    public SourceCodeBuilder makeStaticField(Class<?> type, String name, String codeValue) {
+        return makeField(true, false, AccessID.PUBLIC, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeStaticField(Class<?> type, String name) {
         return makeField(true, false, AccessID.PUBLIC, type, name, null);
     }
 
-    public SourceCodeBuilder makeFinalizedField(AccessID accessID, Class<?> type, String name, String equal) {
-        return makeField(false, true, accessID, type, name, equal);
+    public SourceCodeBuilder makeFinalizedField(AccessID accessID, Class<?> type, String name, String codeValue) {
+        return makeField(false, true, accessID, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeFinalizedField(AccessID accessID, Class<?> type, String name) {
         return makeField(false, true, accessID, type, name, null);
     }
 
-    public SourceCodeBuilder makeField(AccessID accessID, Class<?> type, String name, String equal) {
-        return makeField(false, false, accessID, type, name, equal);
+    public SourceCodeBuilder makeField(AccessID accessID, Class<?> type, String name, String codeValue) {
+        return makeField(false, false, accessID, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeField(AccessID accessID, Class<?> type, String name) {
         return makeField(false, false, accessID, type, name, null);
     }
 
-    public SourceCodeBuilder makeFinalizedField(Class<?> type, String name, String equal) {
-        return makeField(false, true, AccessID.PUBLIC, type, name, equal);
+    public SourceCodeBuilder makeFinalizedField(Class<?> type, String name, String codeValue) {
+        return makeField(false, true, AccessID.PUBLIC, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeFinalizedField(Class<?> type, String name) {
         return makeField(false, true, AccessID.PUBLIC, type, name, null);
     }
 
-    public SourceCodeBuilder makeField(Class<?> type, String name, String equal) {
-        return makeField(false, false, AccessID.PUBLIC, type, name, equal);
+    public SourceCodeBuilder makeField(Class<?> type, String name, String codeValue) {
+        return makeField(false, false, AccessID.PUBLIC, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeField(Class<?> type, String name) {
         return makeField(false, false, AccessID.PUBLIC, type, name, null);
     }
 
-    public SourceCodeBuilder makeLocalFinalizedField(Class<?> type, String name, String equal) {
-        return makeField(false, true, AccessID.PACKAGE, type, name, equal);
+    public SourceCodeBuilder makeLocalFinalizedField(Class<?> type, String name, String codeValue) {
+        return makeField(false, true, AccessID.PACKAGE, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeLocalFinalizedField(Class<?> type, String name) {
         return makeField(false, true, AccessID.PACKAGE, type, name, null);
     }
 
-    public SourceCodeBuilder makeLocalField(Class<?> type, String name, String equal) {
-        return makeField(false, false, AccessID.PACKAGE, type, name, equal);
+    public SourceCodeBuilder makeLocalField(Class<?> type, String name, String codeValue) {
+        return makeField(false, false, AccessID.PACKAGE, type, name, codeValue);
     }
 
     public SourceCodeBuilder makeLocalField(Class<?> type, String name) {
@@ -266,8 +266,20 @@ public final class SourceCodeBuilder {
         return this;
     }
 
-    public SourceCodeBuilder makeFieldInit(boolean isThis, String field, String code) {
-        return makeLine((isThis ? "this." : "") + field + " = " + code);
+    private SourceCodeBuilder makeSetField(boolean isThis, String field, String codeValue) {
+        return makeLine((isThis ? "this." : "") + field + " = " + codeValue);
+    }
+
+    public SourceCodeBuilder makeSetThisField(String field, String codeValue) {
+        return makeSetField(true, field, codeValue);
+    }
+
+    public SourceCodeBuilder makeSetThisField(String field) {
+        return makeSetField(true, field, field);
+    }
+
+    public SourceCodeBuilder makeSetField(String field, String codeValue) {
+        return makeSetField(false, field, codeValue);
     }
 
     @NonFinal
