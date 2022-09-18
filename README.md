@@ -1,10 +1,5 @@
-# JRestFramework
-Create a REST project services structure with a JRestFramework
-
----
-
-This library provides many tools for configurability 
-and initialization flexibility to run your code or project.
+# JRuntimeSource
+Use own runtime classes and objects created by this library
 
 ---
 
@@ -17,192 +12,82 @@ and initialization flexibility to run your code or project.
 
 ## HOW TO USE?
 
-### REST CLIENT
+To begin with, we need to understand how to generally<br> 
+build a hierarchy and structure of our classes.
 
-A simple example of REST-client structure:
+For this, `com.itzstonlex.runtimesource.SourceCodeBuilder` will help us
 
+Usage example:
 ```java
-import com.itzstonlex.restframework.api.*;
-import com.itzstonlex.restframework.api.method.Get;
-import com.itzstonlex.restframework.api.method.Post;
-import com.itzstonlex.restframework.api.RestBody;
-import com.itzstonlex.restframework.api.response.RestResponse;
+SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", null, new Class[]{Serializable.class})
+        .setPackage("com.itzstonlex.users")
 
-@RestService
-@RestClient(url = "http://localhost:8082/api")
-@RestFlag(RestFlag.Type.ASYNC_REQUESTS)
-@RestFlag(RestFlag.Type.THROW_UNHANDLED_EXCEPTIONS)
-public interface RestClientTest {
+        .makeFinalizedField(AccessID.PRIVATE, String.class, "name")
+        .makeConstructor(AccessID.PUBLIC, MethodSignature.with(
+                MethodParam.create(String.class, "name")
+        ))
+        .beginBody()
+            .makeFieldInit(true, "name", "name")
+        .endpointBody()
 
-    /**
-     * This function automatically converts the received JSON into
-     * the object specified in the return object type of this function (Userdata)
-     *
-     * @param name - Name of user.
-     */
-    @Get(context = "/user")
-    @Header(name = "Content-Type", value = "application/json")
-    Userdata getUserdata(@RestParam("name") String name);
+        .makeGetter(String.class, "name")
 
-    /**
-     * This function automatically converts the received JSON into
-     * the object specified in the return object type of this function (List)
-     *
-     * @param limit - Limit of users list size
-     */
-    @Get(context = "/users")
-    List<Userdata> getCachedUserdataList(@RestParam("limit") long limit);
-
-    /**
-     * And this function returns a direct HTTP result after
-     * executing the request with all the native data
-     *
-     * @param name - Name of user.
-     */
-    @Get(context = "/user")
-    RestResponse getUserdataAsResponse(@RestParam("name") String name);
-
-    /**
-     * The requestMethod body can be created using the
-     * {@link com.itzstonlex.restframework.api.RestBody}
-     * factory, as shown in this example
-     */
-    @Post(context = "/adduser", useSignature = false)
-    @Header(name = "Content-Type", value = "application/json")
-    @Header(name = "Auth-Token", value = "TestToken123", operate = Header.Operation.ADD)
-    RestResponse addUserdata(@RestParam RestBody body);
-}
+        .makeOverrideMethod(AccessID.PUBLIC, String.class, "toString", MethodSignature.empty())
+        .beginBody()
+            .makeReturn("getName()")
+        .endpointBody();
 ```
 
-_P.S.: And also no one forbids not using the method signature at all_
 
----
+Thus, we have created a sample of our class.
 
-### REST SERVER
-
-A simple example of REST-server structure:
+Initial view so far:
 
 ```java
-import com.itzstonlex.restframework.api.*;
-import com.itzstonlex.restframework.api.method.Get;
-import com.itzstonlex.restframework.api.method.Post;
-import com.itzstonlex.restframework.api.request.RestRequestContext;
-import com.itzstonlex.restframework.api.response.Responses;
-import com.itzstonlex.restframework.api.response.RestResponse;
+package com.itzstonlex.users;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.io.Serializable;
 
-@RestService
-@RestServer(host = "localhost", port = 8082, defaultContext = "/api")
-@RestFlag(RestFlag.Type.THROW_UNHANDLED_EXCEPTIONS)
-public class RestServerTest {
+public class User implements Serializable {
 
-    private static final int NOT_FOUND_ERR = (Responses.BAD_REQUEST + 4);
-    
-    private static final String TOKEN_HEADER = "Auth-Token", 
-                                TOKEN = "TestToken123";
+    private final String name;
 
-    private final List<Userdata> userdataList;
-    
-    public RestServerTest(List<Userdata> userdataList) {
-        this.userdataList = userdataList;
+    public User(String name) {
+        this.name = name;
     }
 
-    @Get(context = "/users", timeout = 200)
-    public RestResponse onUsersGet() {
-        return Responses.fromJSON(Responses.OK, userdataList);
+    public String getName() {
+        return name;
     }
 
-    @Get(context = "/users")
-    public RestResponse onLimitedUsersGet(@RestParam("limit") long limit) {
-        return Responses.fromJSON(Responses.OK, userdataList.stream().limit(limit).collect(Collectors.toList()));
-    }
-
-    @Get(context = "/user")
-    public RestResponse onUserGet(@RestParam("name") String name) {
-
-        Userdata userdata = userdataList.stream()
-                .filter(cached -> cached.getName().equalsIgnoreCase(name))
-                .findFirst()
-                .orElse(null);
-
-        if (userdata == null) {
-            return Responses.fromMessage(NOT_FOUND_ERR, "Userdata is not found");
-        }
-
-        return Responses.fromJSON(Responses.OK, userdata);
-    }
-
-    @Post(context = "/adduser", timeout = 250)
-    public RestResponse onUserAdd(@RestParam RestRequestContext context) {
-        String tokenHeader = context.getFirstHeader(TOKEN_HEADER);
-
-        if (tokenHeader == null || !tokenHeader.equals(TOKEN)) {
-            throw new IllegalArgumentException(TOKEN_HEADER);
-        }
-
-        RestBody message = context.getBody();
-
-        Userdata newUserdata = message.getAsJsonObject(Userdata.class);
-        userdataList.add(newUserdata);
-
-        return Responses.fromMessageAsJSON(Responses.OK, "Successfully added");
-    }
-
-    @RestExceptionHandler
-    public void onExceptionThrow(IllegalArgumentException exception) {
-        System.out.println("Wrong authentication token!");
+    @Override
+    public String toString() {
+        return getName();
     }
 }
 ```
 
 ---
 
-### TESTING REST-SERVICES
-
-A simple example of initializing your<br>
-project for the requirements of this library:
+Our next step is to directly compile this class and save it to Runtime:
 
 ```java
-import com.itzstonlex.restframework.RestFrameworkBootstrap;
-import com.itzstonlex.restframework.RestServicePublicManager;
+RuntimeCompiler runtimeCompiler = new RuntimeCompiler();
+runtimeCompiler.addClass(sourceCodeBuilder);
 
-public class Bootstrap {
-
-    public static void main(String[] args) {
-        RestServicePublicManager rest = RestFrameworkBootstrap.runServices(Bootstrap.class);
-    }
-}
+runtimeCompiler.compile();
 ```
 
-Example REST services tests:
+Since displaying the `Object` on the screen calls the `toString()`<br>
+method from it, we will end up with the username entered through<br>
+reflection:
+
 ```java
-// Bind a REST-server
-rest.bind(RestServerTest.class, new ArrayList<>());
+Class<?> compiledClass = runtimeCompiler
+        .getCompiledClass("com.itzstonlex.users.User");
 
-// Get initialized REST-client
-RestClientTest restClient = rest.get(RestClientTest.class);
-
-// Add user & print response.
-RestBody adduserBody = RestBody.asJsonObject(new Userdata("itzstonlex", 18, 3)); 
-System.out.println("[Test] " + restClient.addUserdata(adduserBody));
-
-// Get response-data at variables.
-Userdata itzstonlex = restClient.getUserdata("itzstonlex");
-RestResponse itzstonlexResponse = restClient.getUserdataAsResponse("itzstonlex");
-
-// Print responses.
-System.out.println("[Test] " + itzstonlex);
-System.out.println("[Test] " + itzstonlexResponse);
-System.out.println("[Test] " + restClient.getCachedUserdataList(2));
-```
-Console Output Example:
-```shell
-[Test] RestResponse(statusCode=200, statusMessage=OK, body={"message":"Successfully added"})
-[Test] Userdata(name=itzstonlex, age=18, count=3)
-[Test] RestResponse(statusCode=200, statusMessage=OK, body={"name":"itzstonlex","age":18,"count":3})
-[Test] [{name=itzstonlex, age=18.0, count=3.0}]
+System.out.println(compiledClass.getConstructor(String.class).newInstance("itzstonlex"));
+// output: itzstonlex
 ```
 ---
 

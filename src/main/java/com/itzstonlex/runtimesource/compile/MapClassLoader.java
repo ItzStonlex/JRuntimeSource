@@ -1,4 +1,4 @@
-package com.itzstonlex.runtimesource;
+package com.itzstonlex.runtimesource.compile;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
