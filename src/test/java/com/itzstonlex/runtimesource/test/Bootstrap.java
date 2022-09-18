@@ -17,13 +17,14 @@ public class Bootstrap {
         SourceCodeBuilder sourceCodeBuilder = RuntimeSourceFactory.create("User", null, new Class[]{Serializable.class})
                 .setPackage("com.itzstonlex.users")
 
-                .makeFinalizedField(AccessID.PRIVATE, String.class, "name")
+                .makeField(AccessID.PRIVATE, String.class, "name")
                 .makeConstructor(AccessID.PUBLIC, MethodSignature.with(MethodParam.create(String.class, "name")))
                 .beginBody()
                     .makeSetThisField("name")
                 .endpointBody()
 
                 .makeGetter(String.class, "name")
+                .makeSetter(String.class, "name")
 
                 .makeOverrideMethod(AccessID.PUBLIC, String.class, "toString", MethodSignature.empty())
                 .beginBody()

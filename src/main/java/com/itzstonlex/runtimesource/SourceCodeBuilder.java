@@ -1,6 +1,7 @@
 package com.itzstonlex.runtimesource;
 
 import com.itzstonlex.runtimesource.data.AccessID;
+import com.itzstonlex.runtimesource.data.MethodParam;
 import com.itzstonlex.runtimesource.data.MethodSignature;
 import com.itzstonlex.runtimesource.data.SourceType;
 import lombok.AccessLevel;
@@ -51,6 +52,9 @@ public final class SourceCodeBuilder {
     }
 
     private String getClassName(Class<?> cls) {
+        if (cls.isPrimitive()) {
+            return cls.getName();
+        }
         return cls.getPackage().getName().startsWith("java.lang") ? cls.getSimpleName() : cls.getName();
     }
 
@@ -244,6 +248,18 @@ public final class SourceCodeBuilder {
 
     public SourceCodeBuilder makeGetter(Class<?> returnType, String field) {
         return makeGetter(AccessID.PUBLIC, returnType, field);
+    }
+
+    public SourceCodeBuilder makeSetter(AccessID accessID, Class<?> returnType, String field) {
+        String methodName = ("set") + Character.toUpperCase(field.charAt(0)) + field.substring(1);
+        return makeMethod(accessID, void.class, methodName, MethodSignature.with(MethodParam.create(returnType, field)))
+                .beginBody()
+                .makeSetThisField(field)
+                .endpointBody();
+    }
+
+    public SourceCodeBuilder makeSetter(Class<?> returnType, String field) {
+        return makeSetter(AccessID.PUBLIC, returnType, field);
     }
 
     public SourceCodeBuilder makeLine(String line) {
