@@ -83,8 +83,7 @@ method from it, we will end up with the username entered through<br>
 reflection:
 
 ```java
-Class<?> compiledClass = runtimeCompiler
-        .getCompiledClass("com.itzstonlex.users.User");
+Class<?> compiledClass = runtimeCompiler.getCompiledClass("com.itzstonlex.users.User");
 
 System.out.println(compiledClass.getConstructor(String.class).newInstance("itzstonlex"));
 // output: itzstonlex
