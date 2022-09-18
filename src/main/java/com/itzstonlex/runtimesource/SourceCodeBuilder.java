@@ -168,6 +168,22 @@ public final class SourceCodeBuilder {
         return makeField(false, false, AccessID.PUBLIC, type, name, null);
     }
 
+    public SourceCodeBuilder makeLocalFinalizedField(Class<?> type, String name, String equal) {
+        return makeField(false, true, AccessID.PACKAGE, type, name, equal);
+    }
+
+    public SourceCodeBuilder makeLocalFinalizedField(Class<?> type, String name) {
+        return makeField(false, true, AccessID.PACKAGE, type, name, null);
+    }
+
+    public SourceCodeBuilder makeLocalField(Class<?> type, String name, String equal) {
+        return makeField(false, false, AccessID.PACKAGE, type, name, equal);
+    }
+
+    public SourceCodeBuilder makeLocalField(Class<?> type, String name) {
+        return makeField(false, false, AccessID.PACKAGE, type, name, null);
+    }
+
     public SourceCodeBuilder makeConstructor(@NonNull AccessID accessID, @NonNull MethodSignature signature) {
         sourceCode.append("\n").append(getOutbound()).append(accessID.getName()).append(className)
                 .append("(").append(signature).append(")");
